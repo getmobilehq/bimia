@@ -41,6 +41,7 @@ function DashboardApp() {
   const [view, setView] = useState('manage');
   const [mobileOpen, setMobileOpen] = useState(false);
   const { user, logout } = useAuth();
+  const userRole = user?.user_role || user?.role || 'user';
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
@@ -49,7 +50,9 @@ function DashboardApp() {
   };
 
   const menuItems = [
-    { id: 'upload', label: 'Upload Dataset', icon: <CloudUploadIcon />, color: '#4CAF50' },
+    ...(userRole === 'admin' ? [
+      { id: 'upload', label: 'Upload Dataset', icon: <CloudUploadIcon />, color: '#4CAF50' }
+    ] : []),
     { id: 'manage', label: 'Manage Datasets', icon: <TableRowsIcon />, color: '#2196F3' },
   ];
 
@@ -209,9 +212,25 @@ function DashboardApp() {
         }}
       >
         {view === 'upload' ? (
-          <UploadDataset />
+          userRole === 'admin' ? (
+            <UploadDataset />
+          ) : (
+            <Box sx={{ p: 4, textAlign: 'center' }}>
+              <Typography variant="h6" color="error" gutterBottom>
+                Restricted: Only admins can upload datasets.
+              </Typography>
+              <Button variant="contained" onClick={() => setView('manage')}>Go to Manage Datasets</Button>
+            </Box>
+          )
+        ) : view === 'manage' ? (
+          <ManageDatasets userRole={userRole} />
         ) : (
-          <ManageDatasets />
+          <Box sx={{ p: 4, textAlign: 'center' }}>
+            <Typography variant="h6" color="error" gutterBottom>
+              Unknown view.
+            </Typography>
+            <Button variant="contained" onClick={() => setView('manage')}>Go to Manage Datasets</Button>
+          </Box>
         )}
       </Box>
     </Box>
