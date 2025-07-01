@@ -41,7 +41,7 @@ function DashboardApp() {
   const [view, setView] = useState('manage');
   const [mobileOpen, setMobileOpen] = useState(false);
   const { user, logout } = useAuth();
-  const userRole = user?.user_role || user?.role || 'user';
+  const userRole = (user?.user_role || user?.role || 'user').toLowerCase();
   const canUpload = userRole === 'admin' || userRole === 'uploader';
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
